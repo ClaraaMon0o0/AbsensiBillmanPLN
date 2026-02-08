@@ -8,28 +8,32 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function show()
+    public function form()
     {
         return view('auth.login');
     }
 
-    public function authenticate(Request $request)
+    public function login(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'kata_sandi' => 'required'
+            'password' => 'required'
         ]);
 
-        if (Auth::attempt(['email' => $data['email'], 'password' => $data['kata_sandi']])) {
+        if (Auth::attempt($request->only('email','password'))) {
             $request->session()->regenerate();
 
-            $peran = auth()->user()->peran->nama_peran;
+            $user = Auth::user();
 
-            return $peran === 'Admin'
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('petugas.dashboard');
+            if ($user->peran->nama_peran === 'Admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('petugas.dashboard');
         }
 
-        return back()->withErrors(['email' => 'Login gagal']);
+        return back()->withErrors([
+            'email' => 'Email atau password salah.'
+        ])->withInput();
     }
 }

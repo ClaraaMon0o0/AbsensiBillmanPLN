@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Pengguna;
 use App\Models\Peran;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
